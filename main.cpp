@@ -31,12 +31,16 @@ int main() {
     for (int i = 0; i < N; ++i)
         map_default.emplace(std::make_pair(i, hard{factorial[i], fibonacci[i]}));
 
-    // 2 - map + my allocator
-    // dump
+    // 2 - map + myalloc
+    std::map<int, hard, std::less<int>, myalloc<std::pair<const int, hard> > > map_myalloc;
+    for (int i = 0; i < N; ++i)
+        map_myalloc.emplace(std::make_pair(i, hard{factorial[i], fibonacci[i]}));
+
+    for (const auto& p : map_myalloc) std::cout << p.first << " " << p.second << std::endl;
 
     // 3 - my container + default allocator
 
-    // 3 - my container + my allocator
+    // 3 - my container + myalloc
     // dump
 
     return 0;
