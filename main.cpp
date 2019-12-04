@@ -16,10 +16,11 @@ std::ostream& operator<<(std::ostream& os, const hard& h) {
 
 int main() {
     const int N = 10;
-    int factorial[N];
-    int fibonacci[N];
+    const size_t capacity_step = 10;
 
     // ? не придумал как сгенерить в compile time
+    int factorial[N];
+    int fibonacci[N];
     static_assert(N <= 12, "int overflow");
     for (int i = 0; i < N; ++i) {
         factorial[i] = (i < 2) ? 1 : factorial[i - 1] * i;
@@ -32,7 +33,7 @@ int main() {
         map_default.emplace(std::make_pair(i, hard{factorial[i], fibonacci[i]}));
 
     // 2 - map + myalloc
-    std::map<int, hard, std::less<int>, myalloc<std::pair<const int, hard> > > map_myalloc;
+    std::map<int, hard, std::less<int>, MyAlloc<std::pair<const int, hard>, capacity_step>> map_myalloc;
     for (int i = 0; i < N; ++i)
         map_myalloc.emplace(std::make_pair(i, hard{factorial[i], fibonacci[i]}));
 
