@@ -40,10 +40,20 @@ class MyList {
     // create an object of type node allocator
     node_alloc_t allocator;
 
-    Node* front = nullptr;
-    Node* back = nullptr;
+    Node* front;
+    Node* back;
 
    public:
+    MyList(): front(nullptr), back(nullptr) {};
+
+    ~MyList() {
+        for (auto p = front; p != nullptr; ) {
+            auto next = p->next;
+            allocator.deallocate(p, 1);
+            p = next;
+        }
+    };
+
     void push_back(const T& value) {
         auto item = allocator.allocate(1);
         item->value = value;
