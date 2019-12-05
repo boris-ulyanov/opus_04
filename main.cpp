@@ -44,10 +44,11 @@ int main() {
     MyList<hard> mylist_default;
     for (int i = 0; i < N; ++i) mylist_default.push_back(hard{factorial[i], fibonacci[i]});
 
-    for (const auto& p : mylist_default) std::cout << p << std::endl;
+    // 4 - my container + myalloc
+    MyList<hard, MyAlloc<hard, capacity_step>> mylist_myalloc;
+    for (int i = 0; i < N; ++i) mylist_myalloc.push_back(hard{factorial[i], fibonacci[i]});
 
-    // 3 - my container + myalloc
-    // dump
+    for (const auto& p : mylist_myalloc) std::cout << p << std::endl;
 
     return 0;
 }
