@@ -1,5 +1,6 @@
 
 #include "myalloc.h"
+#include "mylist.h"
 
 #include <map>
 
@@ -33,13 +34,17 @@ int main() {
         map_default.emplace(std::make_pair(i, hard{factorial[i], fibonacci[i]}));
 
     // 2 - map + myalloc
-    std::map<int, hard, std::less<int>, MyAlloc<std::pair<const int, hard>, capacity_step>> map_myalloc;
+    std::map<int, hard, std::less<>, MyAlloc<std::pair<const int, hard>, capacity_step>> map_myalloc;
     for (int i = 0; i < N; ++i)
         map_myalloc.emplace(std::make_pair(i, hard{factorial[i], fibonacci[i]}));
 
     for (const auto& p : map_myalloc) std::cout << p.first << " " << p.second << std::endl;
 
     // 3 - my container + default allocator
+    MyList<hard> mylist_default;
+    for (int i = 0; i < N; ++i) mylist_default.push_back(hard{factorial[i], fibonacci[i]});
+
+    for (const auto& p : mylist_default) std::cout << p << std::endl;
 
     // 3 - my container + myalloc
     // dump
