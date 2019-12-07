@@ -10,6 +10,9 @@ class MyList {
 
    private:
     struct Node {
+        template <typename... Args>
+        Node(Args&&... args) : value(std::forward<Args>(args)...), next(nullptr) {}
+
         T value;
         Node* next;
     };
@@ -49,6 +52,7 @@ class MyList {
     ~MyList() {
         for (auto p = front; p != nullptr;) {
             auto next = p->next;
+            allocator.destroy(p);
             allocator.deallocate(p, 1);
             p = next;
         }
@@ -56,16 +60,15 @@ class MyList {
 
     template <typename... Args>
     void emplace_back(Args&&... args) {
-        auto item = allocator.allocate(1);
-        allocator.construct(&(item->value), std::forward<Args>(args)...);
-        item->next = nullptr;
-
+        auto node = allocator.allocate(1);
+        allocator.construct(node, std::forward<Args>(args)...);
+        
         if (back) {
-            back->next = item;
-            back = item;
+            back->next = node;
+            back = node;
         } else {
-            back = item;
-            front = item;
+            back = node;
+            front = node;
         }
     }
 
