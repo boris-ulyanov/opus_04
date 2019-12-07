@@ -51,7 +51,16 @@ struct MyAlloc {
         if (bucket == filling) filling = nullptr;
         --bucket->size;
         if (bucket->size == 0) free(bucket);
-    };
+    }
+
+    template <typename U, typename... Args>
+    void construct(U* p, Args&&... args) const {
+        new (p) U(std::forward<Args>(args)...);
+    }
+
+    void destroy(T* p) const {
+        p->~T();
+    }
 
     template <typename U>
     struct rebind {

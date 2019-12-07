@@ -7,11 +7,15 @@
 struct hard {
     int fa;
     int fi;
-    hard(int fa, int fi) : fa(fa), fi(fi){};
+
+    hard(int fa, int fi) : fa(fa), fi(fi) {}
+
+    hard(const hard& rgt) = delete;
+    hard(hard&& rgt) = delete;
 };
 
 std::ostream& operator<<(std::ostream& os, const hard& h) {
-    os << "hard(" << h.fa << ":" << h.fi << ")";
+    os << h.fa << " " << h.fi;
     return os;
 }
 
@@ -31,33 +35,33 @@ int main() {
     // 1 - map + default allocator
     std::map<int, hard> map_default;
     for (int i = 0; i < N; ++i)
-        map_default.emplace(
-             std::piecewise_construct,
-             std::forward_as_tuple(i),
-             std::forward_as_tuple(factorial[i], fibonacci[i])
-        );
+        map_default.emplace(std::piecewise_construct,
+                            std::forward_as_tuple(i),
+                            std::forward_as_tuple(factorial[i], fibonacci[i]));
 
-    // 2 - map + myalloc
-    std::map<int, hard, std::less<>, MyAlloc<std::pair<const int, hard>, capacity_step>> map_myalloc;
+    // 2 - map + myalloc + dump
+    std::map<int, hard, std::less<>, MyAlloc<std::pair<const int, hard>, capacity_step>>
+        map_myalloc;
     for (int i = 0; i < N; ++i)
-        map_myalloc.emplace(std::make_pair(i, hard{factorial[i], fibonacci[i]}));
-        map_myalloc.emplace(
-                std::piecewise_construct,
-                std::forward_as_tuple(i),
-                std::forward_as_tuple(factorial[i], fibonacci[i])
-        );
+        map_myalloc.emplace(std::piecewise_construct,
+                            std::forward_as_tuple(i),
+                            std::forward_as_tuple(factorial[i], fibonacci[i]));
 
-    for (const auto& p : map_myalloc) std::cout << p.first << " " << p.second << std::endl;
+    for (const auto& p : map_myalloc)
+        std::cout << p.first << " " << p.second << std::endl;
 
     // 3 - my container + default allocator
     MyList<hard> mylist_default;
-    for (int i = 0; i < N; ++i) mylist_default.push_back(hard{factorial[i], fibonacci[i]});
+    for (int i = 0; i < N; ++i)
+        mylist_default.emplace_back(factorial[i], fibonacci[i]);
 
-    // 4 - my container + myalloc
+    // 4 - my container + myalloc + dump
     MyList<hard, MyAlloc<hard, capacity_step>> mylist_myalloc;
-    for (int i = 0; i < N; ++i) mylist_myalloc.push_back(hard{factorial[i], fibonacci[i]});
+    for (int i = 0; i < N; ++i)
+        mylist_myalloc.emplace_back(factorial[i], fibonacci[i]);
 
-    for (const auto& p : mylist_myalloc) std::cout << p << std::endl;
+    for (const auto& p : mylist_myalloc)
+        std::cout << p << std::endl;
 
     return 0;
 }

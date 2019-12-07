@@ -18,7 +18,7 @@ class MyList {
         const Node* node;
 
        public:
-        explicit iterator(const Node* _node) : node(_node){};
+        explicit iterator(const Node* _node) : node(_node) {};
 
         auto operator!=(const iterator& rhs) const {
             return node != rhs.node;
@@ -28,7 +28,7 @@ class MyList {
             return *this;
         };
 
-        auto operator*() const {
+        const T& operator*() const {
             return node->value;
         };
     };
@@ -44,19 +44,20 @@ class MyList {
     Node* back;
 
    public:
-    MyList(): front(nullptr), back(nullptr) {};
+    MyList() : front(nullptr), back(nullptr){};
 
     ~MyList() {
-        for (auto p = front; p != nullptr; ) {
+        for (auto p = front; p != nullptr;) {
             auto next = p->next;
             allocator.deallocate(p, 1);
             p = next;
         }
     };
 
-    void push_back(const T& value) {
+    template <typename... Args>
+    void emplace_back(Args&&... args) {
         auto item = allocator.allocate(1);
-        item->value = value;
+        allocator.construct(&(item->value), std::forward<Args>(args)...);
         item->next = nullptr;
 
         if (back) {
@@ -66,7 +67,7 @@ class MyList {
             back = item;
             front = item;
         }
-    };
+    }
 
     auto begin() {
         return iterator(front);
