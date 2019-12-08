@@ -49,6 +49,35 @@ class MyList {
    public:
     MyList() : front(nullptr), back(nullptr){};
 
+    // copy same allocator
+    MyList(const MyList& other) : front(nullptr), back(nullptr) {
+         for (const auto& p : other)
+             push_back(p);
+    }
+
+    // move same allocator
+    MyList(MyList&& other) : front(nullptr), back(nullptr) {
+        std::swap(allocator, other.allocator);
+        std::swap(front, other.front);
+        std::swap(back, other.back);
+    }
+
+    // copy different allocator
+    template <typename OtherAllocator>
+    MyList(const MyList<T, OtherAllocator>& other) : front(nullptr), back(nullptr) {
+        for (const auto& p : other)
+            push_back(p);
+    }
+
+    // move different allocator
+    template <typename OtherAllocator>
+    MyList(MyList<T, OtherAllocator> && other) : front(nullptr), back(nullptr) {
+        // ??? просто копируем
+        for (const auto& p : other)
+            push_back(p);
+        other.~MyList<T, OtherAllocator>();    // ??? имеет смысл
+    }
+
     ~MyList() {
         for (auto p = front; p != nullptr;) {
             auto next = p->next;
@@ -56,7 +85,9 @@ class MyList {
             allocator.deallocate(p, 1);
             p = next;
         }
-    };
+        front = nullptr;
+        back = nullptr;
+    }
 
     template <typename... Args>
     void emplace_back(Args&&... args) {
@@ -72,10 +103,23 @@ class MyList {
         }
     }
 
-    auto begin() {
+    void push_back(const T& value) {
+        auto node = allocator.allocate(1);
+        node->value = value;
+
+        if (back) {
+            back->next = node;
+            back = node;
+        } else {
+            back = node;
+            front = node;
+        }
+    }
+
+    auto begin() const {
         return iterator(front);
     }
-    auto end() {
+    auto end() const {
         return iterator(nullptr);
     }
 };

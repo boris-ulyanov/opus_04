@@ -20,7 +20,7 @@ std::ostream& operator<<(std::ostream& os, const hard& h) {
 }
 
 int main() {
-    const int N = 10;
+    const int N = 11;
     const size_t capacity_step = 10;
 
     // ? не придумал как сгенерить в compile time
@@ -62,6 +62,26 @@ int main() {
 
     for (const auto& p : mylist_myalloc)
         std::cout << p << std::endl;
+
+    // copy/move sources
+    MyList<int> mylist_ints_std;
+    MyList<int, MyAlloc<int, capacity_step>> mylist_ints_my;
+    for (int j = 0; j < 3; ++j) {
+        mylist_ints_std.push_back(j);
+        mylist_ints_my.push_back(j);
+    }
+
+    // same allocator copy
+    auto same_copy = mylist_ints_std;
+
+    // same allocator move
+    auto same_move = std::move(mylist_ints_std);
+
+    // different allocator copy
+    MyList<int> different_copy = mylist_ints_my;
+
+    // different allocator move
+    MyList<int> different_move = std::move(mylist_ints_my);
 
     return 0;
 }
