@@ -105,7 +105,7 @@ class MyList {
 
     void push_back(const T& value) {
         auto node = allocator.allocate(1);
-        node->value = value;
+        allocator.construct(node, value);
 
         if (back) {
             back->next = node;
