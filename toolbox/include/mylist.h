@@ -116,6 +116,19 @@ class MyList {
         }
     }
 
+    void push_back(T&& value) {
+        auto node = allocator.allocate(1);
+        allocator.construct(node, std::forward<T>(value));
+
+        if (back) {
+            back->next = node;
+            back = node;
+        } else {
+            back = node;
+            front = node;
+        }
+    }
+
     auto begin() const {
         return iterator(front);
     }
