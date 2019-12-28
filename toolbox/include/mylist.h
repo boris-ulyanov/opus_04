@@ -46,6 +46,16 @@ class MyList {
     Node* front;
     Node* back;
 
+    void append_node(Node* node) {
+        if (back) {
+            back->next = node;
+            back = node;
+        } else {
+            back = node;
+            front = node;
+        }
+    }
+
    public:
     MyList() : front(nullptr), back(nullptr){};
 
@@ -93,40 +103,19 @@ class MyList {
     void emplace_back(Args&&... args) {
         auto node = allocator.allocate(1);
         allocator.construct(node, std::forward<Args>(args)...);
-        
-        if (back) {
-            back->next = node;
-            back = node;
-        } else {
-            back = node;
-            front = node;
-        }
+        append_node(node);
     }
 
     void push_back(const T& value) {
         auto node = allocator.allocate(1);
         allocator.construct(node, value);
-
-        if (back) {
-            back->next = node;
-            back = node;
-        } else {
-            back = node;
-            front = node;
-        }
+        append_node(node);
     }
 
     void push_back(T&& value) {
         auto node = allocator.allocate(1);
         allocator.construct(node, std::forward<T>(value));
-
-        if (back) {
-            back->next = node;
-            back = node;
-        } else {
-            back = node;
-            front = node;
-        }
+        append_node(node);
     }
 
     auto begin() const {
